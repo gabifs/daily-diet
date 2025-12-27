@@ -13,6 +13,11 @@ Cookie: sessionId={{sessionId}}
   "isInDiet": false
 }
 
+### get meals metrics
+GET {{url}}/metrics HTTP/1.1
+Cookie: sessionId={{sessionId}}
+
+
 ### list all meals
 GET {{url}} HTTP/1.1
 Cookie: sessionId={{sessionId}}

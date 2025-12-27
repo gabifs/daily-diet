@@ -7,6 +7,63 @@ import { randomUUID } from 'node:crypto'
 export async function mealsRoutes(app: FastifyInstance) {
   app.addHook('preHandler', checkSessionIdExists)
 
+  app.get('/metrics', async (request, reply) => {
+    const sessionId = request.cookies.sessionId!
+    const user = await knex('users').where('session_id', sessionId).first()
+
+    if (!user) {
+      return reply.status(401).send({ error: 'Unauthorized!' })
+    }
+
+    const meals = await knex('meals').where({
+      user_id: user.id,
+    })
+
+    const sequencia = meals.reduce(
+      (acc, meal) => {
+        if (!meal.is_in_diet) {
+          return {
+            streak: 0,
+            bestStreak:
+              acc.streak > acc.bestStreak ? acc.streak : acc.bestStreak,
+          }
+        } else {
+          return {
+            ...acc,
+            streak: acc.streak + 1,
+          }
+        }
+      },
+      {
+        streak: 0,
+        bestStreak: 0,
+      },
+    )
+
+    const mealsInDiet = await knex('meals')
+      .where({
+        user_id: user.id,
+        is_in_diet: true,
+      })
+      .count('id', { as: 'total' })
+      .first()
+
+    const mealsOffDiet = await knex('meals')
+      .where({
+        user_id: user.id,
+        is_in_diet: false,
+      })
+      .count('id', { as: 'total' })
+      .first()
+
+    return reply.status(201).send({
+      mealsInDiet: mealsInDiet?.total,
+      mealsOffDiet: mealsOffDiet?.total,
+      totalMeals: meals?.length,
+      bestStreak: sequencia.bestStreak,
+    })
+  })
+
   app.get('/', async (request, reply) => {
     const sessionId = request.cookies.sessionId!
     const user = await knex('users').where('session_id', sessionId).first()
