@@ -20,3 +20,8 @@ Cookie: sessionId={{sessionId}}
 ### get meal by id
 GET {{url}}/07b0b09e-2fd9-400b-8bd7-12f7dc634394 HTTP/1.1
 Cookie: sessionId={{sessionId}}
+
+
+### delete meal by id
+DELETE {{url}}/07b0b09e-2fd9-400b-8bd7-12f7dc634394 HTTP/1.1
+Cookie: sessionId={{sessionId}}

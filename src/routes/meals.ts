@@ -78,4 +78,21 @@ export async function mealsRoutes(app: FastifyInstance) {
 
     return reply.status(201).send()
   })
+
+  app.delete('/:id', async (request, reply) => {
+    const sessionId = request.cookies.sessionId!
+    const getMealIdParam = z.object({
+      id: z.string().uuid(),
+    })
+    const { id } = getMealIdParam.parse(request.params)
+    const user = await knex('users').where('session_id', sessionId).first()
+
+    if (!user) {
+      return reply.status(401).send({ error: 'Unauthorized!' })
+    }
+
+    await knex('meals').where('id', id).where('user_id', user.id).delete()
+
+    return reply.status(204).send()
+  })
 }
