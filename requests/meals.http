@@ -21,6 +21,17 @@ Cookie: sessionId={{sessionId}}
 GET {{url}}/07b0b09e-2fd9-400b-8bd7-12f7dc634394 HTTP/1.1
 Cookie: sessionId={{sessionId}}
 
+### update meal by id
+PUT {{url}}/c66c655b-e57e-40cf-8ffe-162d0970ca6e HTTP/1.1
+Content-Type: application/json
+Cookie: sessionId={{sessionId}}
+
+{
+  "name": "Foo updated",
+  "description": "Bar updated",
+  "date": "2025-12-26T13:13:29.670Z",
+  "isInDiet": true
+}
 
 ### delete meal by id
 DELETE {{url}}/07b0b09e-2fd9-400b-8bd7-12f7dc634394 HTTP/1.1
