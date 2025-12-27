@@ -25,6 +25,29 @@ export async function mealsRoutes(app: FastifyInstance) {
     })
   })
 
+  app.get('/:id', async (request, reply) => {
+    const sessionId = request.cookies.sessionId!
+    const getMealIdParam = z.object({
+      id: z.string().uuid(),
+    })
+    const { id } = getMealIdParam.parse(request.params)
+    const user = await knex('users').where('session_id', sessionId).first()
+
+    if (!user) {
+      return reply.status(401).send({ error: 'Unauthorized!' })
+    }
+
+    const meal = await knex('meals')
+      .where('id', id)
+      .where('user_id', user.id)
+      .select('id', 'name', 'date', 'description', 'is_in_diet as isInDiet')
+      .first()
+
+    return reply.status(201).send({
+      meal,
+    })
+  })
+
   app.post('/', async (request, reply) => {
     const sessionId = request.cookies.sessionId!
     const createMealBodySchema = z.object({
