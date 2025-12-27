@@ -7,6 +7,24 @@ import { randomUUID } from 'node:crypto'
 export async function mealsRoutes(app: FastifyInstance) {
   app.addHook('preHandler', checkSessionIdExists)
 
+  app.get('/', async (request, reply) => {
+    const sessionId = request.cookies.sessionId!
+    const user = await knex('users').where('session_id', sessionId).first()
+
+    if (!user) {
+      return reply.status(401).send({ error: 'Unauthorized!' })
+    }
+
+    const meals = await knex('meals')
+      .where('user_id', user.id)
+      .select('id', 'name', 'date', 'description', 'is_in_diet as isInDiet')
+      .orderBy('date', 'desc')
+
+    return reply.status(201).send({
+      meals,
+    })
+  })
+
   app.post('/', async (request, reply) => {
     const sessionId = request.cookies.sessionId!
     const createMealBodySchema = z.object({

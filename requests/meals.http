@@ -12,3 +12,7 @@ Cookie: sessionId={{sessionId}}
   "date": "2025-12-26T23:31:29.670Z",
   "isInDiet": false
 }
+
+### list all meals
+GET {{url}} HTTP/1.1
+Cookie: sessionId={{sessionId}}
